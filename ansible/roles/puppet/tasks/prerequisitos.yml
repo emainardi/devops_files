@@ -1,0 +1,11 @@
+- name: Baixando Pacotes DEB para Puppet 
+  get_url:                           
+    url: https://apt.puppet.com/puppet6-release-bionic.deb
+    dest: /                          
+  when: ansible_os_family == 'Debian'    
+                                     
+- name: Baixando Pacotes RPM para CentOS 7
+  get_url:                           
+    url: https://yum.puppet.com/puppet6-release-el-7.noarch.rpm
+    dest: /root/puppet.rpm                          
+  when: ansible_os_family == 'RedHat'

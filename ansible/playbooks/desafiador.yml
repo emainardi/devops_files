@@ -1,0 +1,66 @@
+# Comentario
+# PlayBook
+---
+#Play
+  - name: Desafio 1
+  hosts: all
+         
+  tasks:
+    #Tasks      
+    - name: Parando o NGINX
+      systemd:
+        name: nginx
+        state: stoped
+      ignore_erros: True
+
+    - name: Removendo NGINX
+      package:
+        name: nginx
+        state: absent
+                           
+    - name: Instalado Pacotes DEBIAN
+      apt:
+        name: ['apache2','libapache2-mod-php7.2','php7.2'] 
+        update_cache: yes
+        state: present
+      when: ansible_distribution == "Ubuntu"   
+
+    - name: Instalando Pacotes RED HAT
+      yum:
+        name: ['httpd','php']
+        state: present      
+      when: ansible_distribution == "CentOS"
+           
+    - name: Comando para habilitar php
+      command: a2enmod php7.2
+      register: resultado
+      when: ansible_distribution == "Ubuntu"
+
+    - name: reiniciando apache2  
+      package:
+        name: httpd
+        state: restarted 
+      when: ansible_distribuction == "CentOS"        
+      
+    - name: reiniciando apache2
+      package: 
+        name: apache2
+        state: restarted
+      when: ansible_distribuction == "CentOS"  
+
+    - name: Criando Arquivo php
+      lineinfile: 
+        path: /var/www/http/index.php
+        line: '<?php echo "Desafio Completo" ?>'
+        create: yes
+
+  handlers:
+  - name: httpd
+    systemd:
+      name: httpd
+      state: restarted
+   
+  - name: apache
+    systemd:
+      name: apache2
+      state: restarted       

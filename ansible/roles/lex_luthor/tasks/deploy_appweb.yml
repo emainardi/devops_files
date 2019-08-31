@@ -1,0 +1,18 @@
+- name: WebApp
+  template:
+    src: index.html
+    dest: /var/www/html/index.html
+
+- name: Baixar uma imagem    
+  get_url:
+    url: 'https://cdn.ome.lt/X-449gpx_LXmjdjh_QM_DgGJHJo=/987x0/smart/uploads/conteudo/fotos/1_uXtt2GG.jpg'
+    dest: '/var/www/html/imagem.jpg'
+
+- name: Restart Apache/HTTP
+  systemd:
+    name: "{{ item.programa }}"
+    state: restarted
+  when: ansible_os_family == item.familia
+  loop:
+  - { programa: "apache2", familia: "Debian"  }        
+  - { programa: "httpd", familia: "RedHat" }  

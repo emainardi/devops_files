@@ -1,0 +1,9 @@
+- name: Instalando Pacote RPM
+  yum:
+    name: /root/puppet.rpm
+    
+ 
+- name: Instalando Puppet Cliente
+  package:
+    name: puppet-agent
+    state: present    

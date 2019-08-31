@@ -1,0 +1,69 @@
+# Comentario
+# PlayBook
+---
+#Play
+- name: Playbook da Mulher Gato
+  hosts: "{{ inventario }}"
+  vars:
+    - username: hera_venenosa       
+  tasks:
+    #Tasks      
+    - name: Comando de Teste
+      command: uptime
+      register: resultado
+
+    - name: Visualizando o resultado
+      debug:
+        var: resultado.stdout
+
+    - name: Instalado Pacotes Aleatorios - LIKE DEBIAN
+      apt:
+        name: nginx
+        update_cache: yes
+        state: absent
+      when: ansible_distribution == "Ubuntu"   
+
+    - name: Instalando Pacotes Aleatorioes - LIKE RED HAT
+      yum:
+        name: nginx
+        state: absent      
+      when: ansible_distribution == "CentOS"
+      loop:
+      - epel-release
+      - ['cowsay','nginx']   
+
+    - name: Ajustando Path
+      lineinfile: 
+        path: /etc/profile
+        line: "export PATH=$PATH:/usr/games"
+        state: present 
+
+    - name: Garantindo Dominios
+      blockinfile: 
+        path: /etc/hosts
+        state: present
+        block: |
+          192.168.99.10 devops.salas4linux.com.br devops
+          192.168.99.20 docker.salas4linux.com.br docker
+          192.168.99.30 automation.salas4linux.com.br automation
+
+    - name: Criando Usuario
+      user: name={{ username }} shell=/bin/bash create_home=yes
+
+    - name: Copiando arquivos
+      copy:
+        src: /etc/passwd
+        dest: "/home/{{ username }}"           
+    
+    - name: Instalando NGINX
+      package:
+        name: nginx
+        state: present
+      notify: reiniciar
+      
+  handlers:
+  - name: reiniciar
+    systemd: 
+      name: nginx    
+      state: restarted
+

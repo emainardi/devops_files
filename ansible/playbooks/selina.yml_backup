@@ -1,0 +1,39 @@
+# Comentario
+# PlayBook
+---
+#Play
+- name: Playbook da Mulher Gato
+  hosts: devops docker
+  tasks:
+    #Tasks      
+    - name: Comando de Teste
+      command: uptime
+      register: resultado
+
+    - name: Visualizando o resultado
+      debug:
+        var: resultado.stdout
+
+    - name: Instalado Pacotes Aleatorios - LIKE DEBIAN
+      apt:
+        name: ['sl','cowsay','nginx']
+        update_cache: yes
+        state: present
+      when: ansible_distribution == "Ubuntu"   
+
+    - name: Instalando Pacotes Aleatorioes - LIKE RED HAT
+      yum:
+        name: "{{ item }}"
+        state: present      
+      when: ansible_distribution == "CentOS"
+      loop:
+      - apel-release
+      - ['cowsay','nginx']   
+
+    - name: Ajustando Path
+      lineinfile: 
+        path: /etc/profile
+        line: "export PATH=$PATH:/usr/games"
+        state: present 
+
+
